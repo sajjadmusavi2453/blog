@@ -3,7 +3,21 @@ POST http://localhost:3000/auth/signup HTTP/1.1
 Content-Type: application/json
 
 {
-    "name" : "sajjad",
-    "username" : "sajjad",
-    "password":"s"
+    "name" : "sajjad1",
+    "username" : "sajjad12",
+    "password":"sajjad123"
 }
+### signin
+POST http://localhost:3000/auth/signin HTTP/1.1
+Content-Type: application/json
+
+{
+    "username" : "sajjad12",
+    "password":"sajjad123"
+}
+### profile
+GET  http://localhost:3000/users/profile HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyN2FlMDUzLWUzMjctNDM2Yi1iOWExLWYzNjFiNWNhNDliNiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzI4ODIwMTExLCJleHAiOjE3Mjg4MjM3MTF9.lcD6OgULWViN_7mt01mdlR2gvb9ZWir-4_Gzfw7tcOI
+
+
