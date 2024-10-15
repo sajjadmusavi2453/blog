@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
+import { Category } from './categories/entities/category.entity';
 
 @Module({
   imports: [
@@ -12,10 +14,11 @@ import { AuthModule } from './auth/auth.module';
       type: 'sqlite',
       database: 'db.db',
       synchronize: true,
-      entities: [User],
+      entities: [User, Category],
     }),
     AuthModule,
     UsersModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -21,3 +21,18 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyN2FlMDUzLWUzMjctNDM2Yi1iOWExLWYzNjFiNWNhNDliNiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzI4ODIwMTExLCJleHAiOjE3Mjg4MjM3MTF9.lcD6OgULWViN_7mt01mdlR2gvb9ZWir-4_Gzfw7tcOI
 
 
+
+########################## category
+
+### create
+POST http://localhost:3000/categories HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyN2FlMDUzLWUzMjctNDM2Yi1iOWExLWYzNjFiNWNhNDliNiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzI4ODIwMTExLCJleHAiOjE3Mjg4MjM3MTF9.lcD6OgULWViN_7mt01mdlR2gvb9ZWir-4_Gzfw7tcOI
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="personnel-pic.jpg"
+Content-Type: image/jpg
+
+@C:\Users\ASUS TUF\Pictures\personnel-pic.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
