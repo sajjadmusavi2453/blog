@@ -7,6 +7,8 @@ import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
+import { PostsModule } from './posts/posts.module';
+import { Post } from './posts/entities/post.entity';
 
 @Module({
   imports: [
@@ -14,11 +16,12 @@ import { Category } from './categories/entities/category.entity';
       type: 'sqlite',
       database: 'db.db',
       synchronize: true,
-      entities: [User, Category],
+      entities: [User, Category , Post],
     }),
     AuthModule,
     UsersModule,
     CategoriesModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

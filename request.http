@@ -36,3 +36,16 @@ Content-Type: image/jpg
 @C:\Users\ASUS TUF\Pictures\personnel-pic.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
+### read
+GET http://localhost:3000/categories HTTP/1.1
+Content-Type: application/json
+
+###
+GET http://localhost:3000/categories/60c9713b-5748-47ef-86d5-2fa05a337e60 HTTP/1.1
+Content-Type: application/json
+
+
+### update
+PATCH  http://localhost:3000/categories/60c9713b-5748-47ef-86d5-2fa05a337e60 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyN2FlMDUzLWUzMjctNDM2Yi1iOWExLWYzNjFiNWNhNDliNiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzI4ODIwMTExLCJleHAiOjE3Mjg4MjM3MTF9.lcD6OgULWViN_7mt01mdlR2gvb9ZWir-4_Gzfw7tcOI
