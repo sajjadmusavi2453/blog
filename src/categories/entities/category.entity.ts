@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Post } from 'src/posts/entities/post.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -11,6 +12,7 @@ export class Category {
 
   @Column()
   imagePath: string;
+  @Exclude()
   @OneToMany((type) => Post, (post) => post.category)
   posts: Post[];
 }

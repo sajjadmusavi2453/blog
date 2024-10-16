@@ -26,6 +26,7 @@ import { Response } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { unlinkSync } from 'fs';
+import { generateError } from 'src/errors';
 @Controller('categories')
 export class CategoriesController {
   private logger = new Logger('CategoriesController');
@@ -59,13 +60,18 @@ export class CategoriesController {
     const dto = plainToClass(CreateCategoryDto, body);
     const errors = await validate(dto);
 
+    if (!file) {
+      throw new BadRequestException('file is required');
+    }
     this.logger.log(`create a category with ${JSON.stringify(dto)}`);
     if (errors.length > 0) {
       unlinkSync(file.path);
-      throw new BadRequestException('Invalid request data');
-    }
-    if (!file) {
-      throw new BadRequestException('file is required');
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'Bad Request',
+        field: errors[0].property,
+        error: errors[0].constraints,
+      });
     }
 
     return this.categoriesService.create(dto, file.path);
@@ -111,19 +117,19 @@ export class CategoriesController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const dto = plainToClass(CreateCategoryDto, body);
+    if (!file) {
+      throw new BadRequestException('file is required');
+    }
+    const errors = await validate(dto);
+    if (errors.length > 0) {
+      console.log(errors);
+
+      unlinkSync(file.path);
+      throw new BadRequestException(generateError(400, errors[0]));
+    }
     this.logger.log(
       `update category with id : ${id} and dto : ${JSON.stringify(dto)}`,
     );
-    if(!file){
-      throw new BadRequestException('file is required');
-
-    }
-    const error = await validate(dto);
-    if (error.length > 0) {
-      unlinkSync(file.path);
-      throw new BadRequestException('Invalid request data');
-    }
-
     return this.categoriesService.update(dto, file.path, id);
   }
 }

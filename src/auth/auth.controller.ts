@@ -1,11 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { SignInDto } from './dtos/signin.dto';
 import { Logger } from '@nestjs/common';
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  private logger = new Logger('auth controller',{timestamp:true});
+  private logger = new Logger('auth controller', { timestamp: true });
   constructor(private readonly authService: AuthService) {}
 
   @Post('/signup')

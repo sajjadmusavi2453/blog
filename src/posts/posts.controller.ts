@@ -9,6 +9,9 @@ import {
   Param,
   Logger,
   Res,
+  Patch,
+  UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -20,6 +23,11 @@ import { unlinkSync } from 'fs';
 import { Post as SinglePost } from './entities/post.entity';
 import { join } from 'path';
 import { Response } from 'express';
+import { UpdatePostDto } from './dtos/update-post.dto';
+import { RoleGuard } from 'src/auth/guards/role.guard';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { Roles } from 'src/auth/decorators/role.decorator';
+import { Role } from 'src/enums/role';
 
 @Controller('posts')
 export class PostsController {
@@ -27,6 +35,9 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @Roles(Role.USER)
+  @UseGuards(RoleGuard)
+  @UseGuards(JwtGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -49,22 +60,47 @@ export class PostsController {
     const error = await validate(createPostDto);
     if (error.length > 0) {
       unlinkSync(file.path);
-      console.log(error);
-
       throw new BadRequestException({
         statusCode: 400,
         message: 'Bad Request',
-        error: { field: error[0].property, error: error[0].constraints },
+        field: error[0].property,
+        error: error[0].constraints,
       });
     }
     return this.postsService.create(createPostDto, file.path);
   }
 
+  @Patch('/:id')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const fileType = file.originalname.split('.')[1];
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const filename = uniqueSuffix + '-s.' + fileType;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  @Roles(Role.USER)
+  @UseGuards(RoleGuard)
+  @UseGuards(JwtGuard)
+  async updatePost(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updatePostDto: UpdatePostDto,
+    @Param('id') id: string,
+  ) {
+    return this.postsService.update(id, updatePostDto, file);
+  }
+
   @Get('/:id')
-  async getPosts(@Param('id') id: string): Promise<SinglePost> {
+  async getPost(@Param('id') id: string): Promise<SinglePost> {
     return this.postsService.findById(id);
   }
-  @Get('images/:imagePath')
+  @Get('/images/:imagePath')
   async serveImage(
     @Param('imagePath') imageName: string,
     @Res() res: Response,
@@ -72,5 +108,16 @@ export class PostsController {
     const imagePath = join(__dirname, '..', '..', 'uploads', imageName);
     this.logger.log(`served image : ${imagePath}`);
     return res.sendFile(imagePath);
+  }
+  @Get()
+  async getPosts() {
+    return this.postsService.findAll();
+  }
+  @Delete('/:id')
+  @Roles(Role.USER)
+  @UseGuards(RoleGuard)
+  @UseGuards(JwtGuard)
+  async deletePost(@Param('id') id: string) {
+    return this.postsService.deleteById(id);
   }
 }

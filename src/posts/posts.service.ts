@@ -1,19 +1,31 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Injectable,
+  NotFoundException,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { CategoriesService } from 'src/categories/categories.service';
 import { unlinkSync } from 'fs';
+import { plainToClass, plainToInstance } from 'class-transformer';
+import { PostDto } from './dtos/post.dto';
+import { UpdatePostDto } from './dtos/update-post.dto';
 
 @Injectable()
+// @UseInterceptors(ClassSerializerInterceptor)
 export class PostsService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
     private categoriesService: CategoriesService,
   ) {}
 
-  async create(createPostDto: CreatePostDto, imagePath: string): Promise<Post> {
+  async create(
+    createPostDto: CreatePostDto,
+    imagePath: string,
+  ): Promise<PostDto> {
     const { title, desc, primaryDesc, categoryId } = createPostDto;
     const category = await this.categoriesService.findById(categoryId);
     if (!category) {
@@ -27,9 +39,65 @@ export class PostsService {
       category,
       imagePath,
     });
-    return await this.postRepository.save(post);
+    const savedPost = await this.postRepository.save(post);
+    // Map the response post to the PostDTO
+    const responsePost = plainToInstance(PostDto, savedPost);
+
+    return responsePost;
   }
   async findById(id: string): Promise<Post> {
-    return await this.postRepository.findOne({ where: { id } });
+    const post = await this.postRepository.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+    if (!post) {
+      throw new NotFoundException('invalid post id');
+    }
+    return post;
+  }
+  async findAll() {
+    return await this.postRepository.find({ relations: ['category'] });
+  }
+  async findByCategory(id: string) {
+    return await this.postRepository.find({ where: { category: { id } } });
+  }
+
+  async update(
+    postId: string,
+    updatePostDto: UpdatePostDto,
+    file: Express.Multer.File,
+  ) {
+    const { categoryId, title, desc, primaryDesc } = updatePostDto;
+    console.log(updatePostDto);
+
+    const post = await this.findById(postId);
+    if (!post) {
+      throw new NotFoundException('invalid post id !!!');
+    }
+    const category = await this.categoriesService.findById(categoryId);
+    if (!category) {
+      throw new NotFoundException('invalid category id !!!');
+    }
+    if (file) {
+      unlinkSync(post.imagePath);
+      post.imagePath = file.path;
+    }
+    // post.category = category ?? post.category;
+    const savedPost = await this.postRepository.save({
+      ...post,
+      ...updatePostDto,
+    });
+    // Map the response post to the PostDTO
+    const responsePost = plainToInstance(PostDto, savedPost);
+
+    return responsePost;
+  }
+
+  async deleteById(id: string): Promise<Post> {
+    const post = await this.findById(id);
+    if (!post) {
+      throw new NotFoundException('invalid post id');
+    }
+    return this.postRepository.remove(post);
   }
 }

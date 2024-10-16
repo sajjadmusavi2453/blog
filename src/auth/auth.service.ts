@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  ClassSerializerInterceptor,
   ConflictException,
   Injectable,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserWithAccessToken } from 'src/types/types';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
@@ -10,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dtos/signin.dto';
 @Injectable()
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthService {
   constructor(
     private usersService: UsersService,
@@ -29,12 +32,7 @@ export class AuthService {
     });
     const accessToken = await this.generateAccessToken(user);
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        role: user.role,
-      },
+      user,
       accessToken,
     };
   }
@@ -49,12 +47,7 @@ export class AuthService {
     }
     const accessToken = await this.generateAccessToken(user);
     return {
-      user: {
-        name: user.name,
-        username: user.username,
-        id: user.id,
-        role: user.role,
-      },
+      user,
       accessToken,
     };
   }
