@@ -12,6 +12,7 @@ import {
   Patch,
   UseGuards,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -28,6 +29,7 @@ import { RoleGuard } from 'src/auth/guards/role.guard';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/enums/role';
+import { PostQueryDto } from './dtos/post-query.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -110,8 +112,8 @@ export class PostsController {
     return res.sendFile(imagePath);
   }
   @Get()
-  async getPosts() {
-    return this.postsService.findAll();
+  async getPosts(@Query() query: PostQueryDto) {
+    return this.postsService.findAll(query);
   }
   @Delete('/:id')
   @Roles(Role.USER)
