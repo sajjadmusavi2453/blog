@@ -1,6 +1,13 @@
 import { Exclude } from 'class-transformer';
 import { Category } from 'src/categories/entities/category.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Comment as SingleComment } from 'src/comments/entities/comment.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Post {
@@ -21,4 +28,6 @@ export class Post {
 
   @ManyToOne((type) => Category, (category) => category.posts)
   category: Category;
+  @OneToMany((type) => SingleComment, (comment) => comment.post)
+  comments: SingleComment[];
 }

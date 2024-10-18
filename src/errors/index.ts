@@ -1,16 +1,18 @@
 import { ValidationError } from 'class-validator';
 
-export const generateError = (statusCode: number, errors: ValidationError) => {
-  const [message, messageVal] = Object.entries(errors.constraints)[0];
+export const generateError = (
+  statusCode: number,
+  errors: ValidationError[],
+) => {
+  const mapError = errors.flatMap((err) => Object.values(err.constraints));
 
   return {
-    message: messageVal,
+    message: mapError,
     error: generateMessage(statusCode),
     statusCode,
-    field: errors.property,
   };
 };
-export const generateMessage = (statusCode) => {
+export const generateMessage = (statusCode:number) => {
   switch (statusCode) {
     case 400:
       return 'Bad Request';

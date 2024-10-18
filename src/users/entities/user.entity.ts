@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Role } from 'src/enums/role';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Comment as UserComment } from 'src/comments/entities/comment.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -15,8 +16,11 @@ export class User {
 
   @Column({ enum: Role })
   role: Role;
-  
+
   @Exclude()
   @Column()
   password: string;
+
+  @OneToMany((type) => UserComment, (comment) => comment.writer)
+  comments: UserComment[];
 }

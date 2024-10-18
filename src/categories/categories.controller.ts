@@ -125,7 +125,7 @@ export class CategoriesController {
       console.log(errors);
 
       unlinkSync(file.path);
-      throw new BadRequestException(generateError(400, errors[0]));
+      throw new BadRequestException(generateError(400, errors));
     }
     this.logger.log(
       `update category with id : ${id} and dto : ${JSON.stringify(dto)}`,

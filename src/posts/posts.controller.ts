@@ -30,6 +30,7 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Roles } from 'src/auth/decorators/role.decorator';
 import { Role } from 'src/enums/role';
 import { PostQueryDto } from './dtos/post-query.dto';
+import { generateError } from 'src/errors';
 
 @Controller('posts')
 export class PostsController {
@@ -62,12 +63,7 @@ export class PostsController {
     const error = await validate(createPostDto);
     if (error.length > 0) {
       unlinkSync(file.path);
-      throw new BadRequestException({
-        statusCode: 400,
-        message: 'Bad Request',
-        field: error[0].property,
-        error: error[0].constraints,
-      });
+      throw new BadRequestException(generateError(400, error));
     }
     return this.postsService.create(createPostDto, file.path);
   }

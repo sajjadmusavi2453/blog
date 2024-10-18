@@ -9,6 +9,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
 import { PostsModule } from './posts/posts.module';
 import { Post } from './posts/entities/post.entity';
+import { CommentsModule } from './comments/comments.module';
+import { Comment as SingleComment } from './comments/entities/comment.entity';
 
 @Module({
   imports: [
@@ -16,12 +18,13 @@ import { Post } from './posts/entities/post.entity';
       type: 'sqlite',
       database: 'db.db',
       synchronize: true,
-      entities: [User, Category , Post],
+      entities: [User, Category, Post, SingleComment],
     }),
     AuthModule,
     UsersModule,
     CategoriesModule,
     PostsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
